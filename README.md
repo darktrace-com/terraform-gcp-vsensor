@@ -2,14 +2,14 @@
 
 ## Overview
 
-This Quick Start deploys Darktrace vSensor virtual threat detection on Google Cloud Platform (GCP). For deploying on Amazon Web Services (AWS), see [terraform-aws-vsensor](https://github.com/darktrace-com/terraform-aws-vsensor).
+This Quick Start deploys Darktrace vSensor virtual threat detection on Google Cloud Platform (GCP). For deploying on Amazon Web Services (AWS), see [terraform-aws-vsensor](https://github.com/darktrace/terraform-aws-vsensor).
 
 Darktrace vSensors analyze raw packet data from mirrored virtual private cloud (VPC) traffic to learn to identify threats. This guide covers the steps necessary to deploy this Quick Start.
 
 Darktrace vSensors accept traffic from mirroring subnets (GCP Virtual Private Cloud [Packet Mirroring](https://cloud.google.com/vpc/docs/packet-mirroring)) and from Darktrace osSensor agents.
 
 - GCP Virtual Private Cloud (VPC) Packet Mirroring copies traffic from VPC subnets you want to monitor.
-- Darktrace osSensors can be configured on virtual machines and containerized applications. Darktrace osSensors are available for Linux, Windows, and as a [container](https://github.com/darktrace-com/ossensor-container) for any system that can run the Docker Engine.
+- Darktrace osSensors can be configured on virtual machines and containerized applications. Darktrace osSensors are available for Linux, Windows, and as a [container](https://github.com/darktrace/ossensor-container) for any system that can run the Docker Engine.
 
 Darktrace vSensors can also be configured to accept syslog feeds of third-party security information and event management tools.
 
@@ -95,7 +95,7 @@ The CIDR range for the subnet that the vSensors will be deployed in, should have
 
 ```
 module "vsensors" {
-  source = "git::https://github.com/darktrace-com/terraform-gcp-vsensor?ref=<version>"
+  source = "git::https://github.com/darktrace/terraform-gcp-vsensor?ref=<version>"
 
 
   project_id = "XXXXXXX"
@@ -120,7 +120,7 @@ module "vsensors" {
 
 ```
 module "vsensors" {
-  source = "git::https://github.com/darktrace-com/terraform-gcp-vsensor?ref=<version>"
+  source = "git::https://github.com/darktrace/terraform-gcp-vsensor?ref=<version>"
 
 
   project_id = "XXXXXXX"
