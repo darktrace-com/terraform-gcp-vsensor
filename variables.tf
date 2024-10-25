@@ -58,6 +58,12 @@ variable "new_vpc_enable" {
   default     = false
 }
 
+variable "ipv6_enable" {
+  type        = bool
+  description = "Enable Dual-Stack IPv6 support to vSensor for allowing packet mirroring from IPv6 enabled hosts/subnets."
+  default     = false
+}
+
 variable "mig_subnet_cidr" {
   type        = string
   description = "Subnet range that the vSensors will be deployed in (must not overlap with bastion or other subnets in VPC)."
@@ -214,8 +220,8 @@ variable "mirrored_cidr_ranges" {
   type        = list(string)
   description = <<EOT
   IP CIDR ranges that apply as a filter on the source (ingress) or destination (egress) IP in the IP header.
-  Only IPv4 is supported.
-  Use 0.0.0.0/0 to allow all IP ranges.
+  IPv4 and IPv6 are supported (requires `ipv6-enable`).
+  Use 0.0.0.0/0, ::/0 to allow all IPv4 and IPv6 ranges.
   Example: ["10.0.0.0/24", "10.0.1.0/24"].
   The default value is "0.0.0.0/0".
   EOT

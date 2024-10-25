@@ -7,6 +7,7 @@ resource "google_compute_instance_template" "vsensor" {
 
   network_interface {
     subnetwork = google_compute_subnetwork.vsensor.self_link
+    stack_type = var.ipv6_enable ? "IPV4_IPV6" : "IPV4_ONLY"
   }
 
   can_ip_forward = true # Allow RESPOND/Network packets
@@ -48,7 +49,18 @@ resource "google_compute_instance_template" "vsensor" {
     create_before_destroy = true
   }
 
-  depends_on = [google_storage_bucket.vsensor_pcaps]
+  depends_on = [
+    google_storage_bucket.vsensor_pcaps,
+    google_project_iam_member.vsensor,
+    google_project_iam_member.vsensor-hmac,
+    google_storage_bucket_iam_member.legacy_bucket_owner_po,
+    google_storage_bucket_iam_member.legacy_bucket_reader_sa,
+    google_storage_bucket_iam_member.object_admin_po,
+    google_storage_bucket_iam_member.object_admin_sa,
+    google_secret_manager_secret_iam_member.sm_ossensor_hmac,
+    google_secret_manager_secret_iam_member.sm_push_token,
+    google_secret_manager_secret_iam_member.update_key
+  ]
 }
 
 resource "google_compute_region_instance_group_manager" "vsensor" {

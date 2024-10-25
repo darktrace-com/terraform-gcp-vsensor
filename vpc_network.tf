@@ -5,6 +5,9 @@ resource "google_compute_subnetwork" "vsensor" {
 
   network                  = local.network_name
   private_ip_google_access = true
+
+  stack_type       = var.ipv6_enable ? "IPV4_IPV6" : "IPV4_ONLY"
+  ipv6_access_type = var.ipv6_enable ? "INTERNAL" : null
 }
 
 resource "google_compute_address" "vsensor_lb" {
@@ -20,8 +23,9 @@ resource "google_compute_network" "vsensor" {
 
   name = "${local.deployment_id}-vpc"
 
-  auto_create_subnetworks = false
-  routing_mode            = "REGIONAL"
+  auto_create_subnetworks  = false
+  routing_mode             = "REGIONAL"
+  enable_ula_internal_ipv6 = var.ipv6_enable
 }
 
 resource "google_compute_router" "vsensor" {
@@ -65,10 +69,44 @@ resource "google_compute_firewall" "traffic_mirror" {
 
   direction = "INGRESS"
 
+  # Ignore inbound traffic mirror for all protocols
+  # kics-scan ignore-line
   allow {
     protocol = "all"
   }
 
   #Apply firewall rule to only vSensors in private MIG.
   target_tags = ["darktrace-vsensor-mirroring"]
+}
+
+resource "google_compute_firewall" "traffic_mirror_ipv6" {
+  count       = var.ipv6_enable ? 1 : 0
+  name        = "${local.deployment_id}-traffic-mirror-ipv6"
+  network     = local.network_name
+  description = "Allow all packet mirror traffic to be ingested into the vSensors."
+
+  #GCP recommended this such that it always applies over other firewall rules
+  priority = "1"
+
+  source_ranges = ["::/0"]
+
+  direction = "INGRESS"
+
+  # Ignore inbound traffic mirror for all protocols
+  # kics-scan ignore-line
+  allow {
+    protocol = "all"
+  }
+
+  #Apply firewall rule to only vSensors in private MIG.
+  target_tags = ["darktrace-vsensor-mirroring"]
+}
+
+resource "google_compute_route" "ipv6_default_route" {
+  count            = var.ipv6_enable ? var.new_vpc_enable ? 1 : 0 : 0
+  name             = "${local.deployment_id}-ipv6-default-route"
+  description      = "Default route for IPv6 enabled vSensor subnet."
+  network          = google_compute_network.vsensor[0].id
+  next_hop_gateway = "https://www.googleapis.com/compute/v1/projects/${var.project_id}/global/gateways/default-internet-gateway"
+  dest_range       = "::/0"
 }

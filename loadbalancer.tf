@@ -8,7 +8,8 @@ resource "google_compute_region_backend_service" "vsensor" {
   network                         = local.network_name
 
   backend {
-    group = google_compute_region_instance_group_manager.vsensor.instance_group
+    balancing_mode = "CONNECTION"
+    group          = google_compute_region_instance_group_manager.vsensor.instance_group
   }
 }
 

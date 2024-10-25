@@ -52,13 +52,10 @@ set_ossensor_loadbalancer_direct.sh 1
 #Configure vSensor for use in ASG
 set_ephemeral.sh 1
 
-sleep 5
-
 #Get and set the ossensor hmac (if provided)
 if [ -n "${sm_ossensor_hmac}" ]; then
   ossensor_hmac=$(gcloud secrets versions access latest --secret=${sm_ossensor_hmac})
   set_ossensor_hmac.sh "$ossensor_hmac"
-  sleep 5
   set_gcp_lb_ip.sh "${ossensor_lb_ip}"
 fi
 
